@@ -46,10 +46,11 @@ def table_qualitative(colum_values):
     for i in colum_values.value_counts().values:
         accumulate = accumulate + i
         frequency_absolute_accumulated.append(accumulate)
-    for i in frequency_absolute_accumulated:
+    for i in colum_values.value_counts().values:
         total += i
+    print(total)
     frequency_relative_values = []
-    for i in frequency_absolute_accumulated:
+    for i in colum_values.value_counts().values:
         relative_frequency = i / total
         frequency_relative_values.append(relative_frequency)
     accumulate_relative_frequency = np.cumsum(frequency_relative_values)
@@ -77,7 +78,7 @@ def table_quantitative(colum_values):
         "Frequency relative": OperationsGraphics.frequency_relative(colum_values),
         "Frequency relative accumulated": OperationsGraphics.frequency_relative_accumulate(colum_values)
     })
-    columns_to_format = ['Lower limit', 'Upper limit', 'Class mark']
+    columns_to_format = ['Lower limit', 'Upper limit', 'Class mark', 'Frequency relative', 'Frequency relative accumulated']
     quantitative_table[columns_to_format] = quantitative_table[columns_to_format].applymap(lambda x: '{:.{}f}'.format(
         x, pd.get_option('display.precision')))
     return quantitative_table

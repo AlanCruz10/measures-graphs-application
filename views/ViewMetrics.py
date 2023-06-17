@@ -1,7 +1,5 @@
 import tkinter
 from services import OperationsMetrics, OperationsGraphics
-canvas_data_additional = None
-
 
 def show_data_metrics(window, colum_values, type_attribute, type_graphics):
     canvas_metrics = tkinter.Canvas(window, background="black")
@@ -9,13 +7,12 @@ def show_data_metrics(window, colum_values, type_attribute, type_graphics):
     if (type_attribute == "int64" and (type_graphics == "Gráfica de barras" or type_graphics == "Gráfica de pastel")) or (type_attribute == "float64" and (type_graphics == "Gráfica de barras" or type_graphics == "Gráfica de pastel")):
         data_qualitative_mode(canvas_metrics, colum_values)
     elif type_attribute == "object":
-        if canvas_data_additional is not None:
-            canvas_data_additional.destroy()
+        additional_data(window, colum_values, type_attribute)
         data_qualitative_mode(canvas_metrics, colum_values)
     else:
         data_parametric(canvas_metrics, colum_values)
         data_statisticians(canvas_metrics, colum_values)
-        additional_data(window, colum_values)
+        additional_data(window, colum_values, type_attribute)
 
 
 def rgb2hex():
@@ -26,11 +23,21 @@ def rgb2hex():
 def data_parametric(canvas_metrics, colum_values):
     label_title_parametric = tkinter.Label(canvas_metrics, text="PARAMETRICOS")
     label_title_parametric.pack(padx=1, pady=4, ipady=2, ipadx=229)
+    moda = OperationsMetrics.mode_grouped(colum_values)
+    moda_r = []
+    if type(moda) is str:
+        moda_r.append(moda)
+    elif type(moda) is list:
+        for i in range(len(moda)):
+            mr = moda[i].__round__(4)
+            moda_r.append(mr)
+    else:
+        moda_r.append(moda.__round__(6))
     grouped_data = tkinter.Label(canvas_metrics, background=rgb2hex(), foreground="white", justify="left", anchor="w",
                                  text=f'DATOS AGRUPADOS\n\n'
                                       f'Media aritmética: {OperationsMetrics.arithmetic_mean_grouped(colum_values)}\n'
                                       f'Mediana: {OperationsMetrics.grouped_median(colum_values)}\n'
-                                      f'Moda: {OperationsMetrics.mode_grouped(colum_values)}\n'
+                                      f'Moda: {moda_r}\n'
                                       f'Rango: {OperationsGraphics.limit_range(colum_values)}\n'
                                       f'Varianza: {OperationsMetrics.grouped_variance(colum_values)}\n'
                                       f'Desviacion estandar: {OperationsMetrics.grouped_standard_deviation(colum_values)}\n'
@@ -54,11 +61,21 @@ def data_parametric(canvas_metrics, colum_values):
 def data_statisticians(canvas_metrics, colum_values):
     label_title_statisticians = tkinter.Label(canvas_metrics, text="ESTADISTICOS")
     label_title_statisticians.pack(padx=3, pady=4, ipady=2, ipadx=234)
+    moda = OperationsMetrics.mode_grouped(colum_values)
+    moda_rr = []
+    if type(moda) is str:
+        moda_rr.append(moda)
+    elif type(moda) is list:
+        for i in range(len(moda)):
+            mr = moda[i].__round__(4)
+            moda_rr.append(mr)
+    else:
+        moda_rr.append(moda.__round__(6))
     grouped_data = tkinter.Label(canvas_metrics, background=rgb2hex(), foreground="white", justify="left", anchor="w",
                                  text=f'DATOS AGRUPADOS\n\n'
                                       f'Media aritmética: {OperationsMetrics.arithmetic_mean_grouped(colum_values)}\n'
                                       f'Mediana: {OperationsMetrics.grouped_median(colum_values)}\n'
-                                      f'Moda: {OperationsMetrics.mode_grouped(colum_values)}\n'
+                                      f'Moda: {moda_rr}\n'
                                       f'Rango: {OperationsGraphics.limit_range(colum_values)}\n'
                                       f'Varianza: {OperationsMetrics.grouped_variance(colum_values)}\n'
                                       f'Desviacion estandar: {OperationsMetrics.grouped_standard_deviation(colum_values)}\n'
@@ -92,19 +109,22 @@ def data_qualitative_mode(canvas_metrics, colum_values):
     mode_statisticians.pack(padx=4, pady=0, ipady=52, ipadx=250, anchor="nw")
 
 
-def additional_data(window, colum_values):
-    global canvas_data_additional
-    canvas_data_additional = tkinter.Canvas(window, background="pink")
-    canvas_data_additional.place(anchor="w", width=760, height=89, x=1, y=459, bordermode="inside")
-    label_title_parametric = tkinter.Label(canvas_data_additional, text="PARAMETRICOS")
-    label_title_parametric.place(x=4, y=3, width=375)
-    mode_parametric = tkinter.Label(canvas_data_additional, background=rgb2hex(), foreground="white", justify="left",
-                                    anchor="w", text=f'Ancho de clase: {OperationsGraphics.class_width(colum_values)}\n'
-                                        f'Numero de clases: {OperationsGraphics.number_of_classes(colum_values)} \n')
-    mode_parametric.place(x=4, y=26, width=375, height=59)
-    label_title_statisticians = tkinter.Label(canvas_data_additional, text="ESTADISTICOS")
-    label_title_statisticians.place(x=381, y=3, width=375)
-    mode_statisticians = tkinter.Label(canvas_data_additional, background=rgb2hex(), foreground="white", justify="left",
-                                       anchor="w", text=f'Ancho de clase: {OperationsGraphics.class_width(colum_values)}\n'
-                                        f'Numero de clases: {OperationsGraphics.number_of_classes(colum_values)} \n')
-    mode_statisticians.place(x=381, y=26, width=375, height=59)
+def additional_data(window, colum_values, type_attribute):
+    if type_attribute != "object":
+        canvas_data_additional = tkinter.Canvas(window, background="pink")
+        label_title_parametric = tkinter.Label(canvas_data_additional, text="PARAMETRICOS")
+        canvas_data_additional.place(anchor="w", width=760, height=89, x=1, y=459, bordermode="inside")
+        label_title_parametric.place(x=4, y=3, width=375)
+        mode_parametric = tkinter.Label(canvas_data_additional, background=rgb2hex(), foreground="white", justify="left",
+                                        anchor="w", text=f'Ancho de clase: {OperationsGraphics.class_width(colum_values)}\n'
+                                            f'Numero de clases: {OperationsGraphics.number_of_classes(colum_values)} \n')
+        mode_parametric.place(x=4, y=26, width=375, height=59)
+        label_title_statisticians = tkinter.Label(canvas_data_additional, text="ESTADISTICOS")
+        label_title_statisticians.place(x=381, y=3, width=375)
+        mode_statisticians = tkinter.Label(canvas_data_additional, background=rgb2hex(), foreground="white", justify="left",
+                                           anchor="w", text=f'Ancho de clase: {OperationsGraphics.class_width(colum_values)}\n'
+                                            f'Numero de clases: {OperationsGraphics.number_of_classes(colum_values)} \n')
+        mode_statisticians.place(x=381, y=26, width=375, height=59)
+    else:
+        canvas_data_additional = tkinter.Canvas(window, background=rgb2hex())
+        canvas_data_additional.place(anchor="w", width=760, height=89, x=1, y=459, bordermode="inside")

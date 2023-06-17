@@ -1,9 +1,11 @@
 import tkinter
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import matplotlib.pyplot as plt
 import numpy as np
 from services import OperationsGraphics
+import mplcursors
 from views import ViewMetrics
+
 
 def print_graphics(column_values, window, type_graphic):
     def rgb2hex(rgb):
@@ -32,9 +34,14 @@ def graphic_select(column_values, type_graphic, canvas_graphics):
 def histogram_plot(column_values, canvas_graphics):
     frequency_absolute = OperationsGraphics.frequency_absolute(column_values)
     mark_class = OperationsGraphics.mark_class(column_values)
+    mark_class_round = []
+    for i in range(len(mark_class)):
+        mark_round = mark_class[i].__round__(4)
+        mark_class_round.append(mark_round)
     fig, ax = plt.subplots(figsize=(6, 5), dpi=100)
     ax.bar(np.arange(len(mark_class)), frequency_absolute, align='center', edgecolor="black")
-    ax.set_xticks(np.arange(len(mark_class)), labels=mark_class)
+    ax.set_xticks(np.arange(len(mark_class)), labels=mark_class_round, rotation=30)
+    mplcursors.cursor(hover=True)
     canvas_figure = FigureCanvasTkAgg(fig, master=canvas_graphics)
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
@@ -48,10 +55,15 @@ def frequency_polygon_graph(column_values, canvas_graphics):
     frequency_relative.append(0)
     mark_class.insert(0, 0)
     mark_class.append(0)
+    mark_class_round = []
+    for i in range(len(mark_class)):
+        mark_round = mark_class[i].__round__(4)
+        mark_class_round.append(mark_round)
     relative_frequency = [i * 100 for i in frequency_relative]
     fig, ax = plt.subplots(figsize=(6, 5), dpi=100)
     ax.plot(np.arange(len(mark_class)), relative_frequency, marker="o")
-    ax.set_xticks(np.arange(len(mark_class)), labels=mark_class)
+    ax.set_xticks(np.arange(len(mark_class)), labels=mark_class_round, rotation=30)
+    mplcursors.cursor(hover=True)
     canvas_figure = FigureCanvasTkAgg(fig, master=canvas_graphics)
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
@@ -64,9 +76,14 @@ def warhead_graph(column_values, canvas_graphics):
     accumulate_relative_frequency = np.insert(frequency_relative_accumulate, 0, 0)
     frequency_relative_accumulate_value = accumulate_relative_frequency[0:] * 100
     mark_class.insert(0, 0)
+    mark_class_round = []
+    for i in range(len(mark_class)):
+        mark_round = mark_class[i].__round__(4)
+        mark_class_round.append(mark_round)
     fig, ax = plt.subplots(figsize=(6, 5), dpi=100)
     ax.plot(np.arange(len(mark_class)), frequency_relative_accumulate_value, marker="o")
-    ax.set_xticks(np.arange(len(mark_class)), labels=mark_class)
+    ax.set_xticks(np.arange(len(mark_class)), labels=mark_class_round, rotation=30)
+    mplcursors.cursor(hover=True)
     canvas_figure = FigureCanvasTkAgg(fig, master=canvas_graphics)
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
@@ -74,11 +91,12 @@ def warhead_graph(column_values, canvas_graphics):
 
 
 def bar_graph(colum_values, canvas_graphics):
-    values_bar_graphics = colum_values.value_counts()
+    values_bar_graphics = colum_values.value_counts().sort_index()
     y = np.arange(len(values_bar_graphics.index[0:]))
     fig, ax = plt.subplots(figsize=(6, 5), dpi=100)
     ax.barh(y, values_bar_graphics)
-    ax.set_yticks(y, labels=values_bar_graphics.index)
+    ax.set_yticks(y, labels=values_bar_graphics.index, rotation=20)
+    mplcursors.cursor(hover=True)
     canvas_figure = FigureCanvasTkAgg(fig, master=canvas_graphics)
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()

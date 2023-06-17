@@ -35,35 +35,54 @@ def open_file(canvas_options, window):
 
 
 def options_attributes_graphics(file, canvas_options, window):
-    content_file = pandas.read_csv(file)
-    attributes = content_file.columns.tolist()
-    validate_file_change = 1
-    validate_attribute = 1
-    column_values = 1
-    graphics_select = 1
-    validate_file(canvas_options, graphics_select, column_values, window, attributes, content_file, validate_attribute, validate_file_change)
+    try:
+        content_file = pandas.read_csv(file)
+        attributes = content_file.columns.tolist()
+        validate_file_change = 1
+        validate_attribute = 1
+        column_values = 1
+        graphics_select = 1
+        print("options_attributes_graphics")
+        validate_file(canvas_options, graphics_select, column_values, window, attributes, content_file,
+                      validate_attribute, validate_file_change)
+    except ValueError:
+        if label_attribute is not None:
+            destroy_attributes_options()
+        elif label_graphics is not None:
+            destroy_attributes_options()
+            destroy_graphics_options()
+        elif button_open_graphic is not None:
+            destroy_attributes_options()
+            destroy_graphics_options()
+            destroy_buttons_options()
 
 
 def validated_type_attribute(content_file, attributes, canvas_options, window):
     attribute = attributes.get()
     validate_attribute = 2
+    print("validated_type_attribute")
     if attribute:
+        print("validated_type_attribute - 1")
         column_values = content_file[attribute]
         is_numeric = all(isinstance(item, (int, float)) for item in column_values)
         is_string = all(isinstance(item, str) for item in column_values)
         is_boolean = all(isinstance(item, bool) for item in column_values)
         if is_numeric:
+            print("validated_type_attribute - 1.1")
             graphics_select = ["Histograma", "Polígono de frecuencias", "Ojivas", "Gráfica de barras",
                                "Gráfica de pastel"]
         elif is_string or is_boolean or is_numeric:
+            print("validated_type_attribute - 1.2")
             graphics_select = ["Gráfica de barras", "Gráfica de pastel"]
         else:
+            print("validated_type_attribute - 1.3")
             graphics_select = []
         validate_file_change = 2
         validate_file(canvas_options, graphics_select, column_values, window, attributes, content_file, validate_attribute, validate_file_change)
 
 
 def options_graphics(canvas_options, graphics_select, column_values, window):
+    print("options_graphics")
     global label_graphics, combobox_graphics
     label_graphics = tkinter.Label(canvas_options, text="Select type graphics")
     label_graphics.pack(padx=2, pady=8, ipady=2, ipadx=8)
@@ -74,6 +93,7 @@ def options_graphics(canvas_options, graphics_select, column_values, window):
 
 
 def options_attributes(canvas_options, attributes, content_file, window):
+    print("options_attributes")
     global label_attribute, combobox_attributes
     label_attribute = tkinter.Label(canvas_options, text="Select attribute")
     label_attribute.pack(padx=2, pady=8, ipady=2, ipadx=8)
@@ -85,6 +105,7 @@ def options_attributes(canvas_options, attributes, content_file, window):
 
 
 def options_button(canvas_options, column_values, window, type_graphics):
+    print("options_button")
     type_attribute = column_values.dtype
     type_graphic = type_graphics.get()
     global button_open_graphic, button_export_table, button_show_temporal_mean, button_show_conglomerate, button_show_mode_qualitative
@@ -105,50 +126,71 @@ def options_button(canvas_options, column_values, window, type_graphics):
 
 
 def validate_file(canvas_options, graphics_select, column_values, window, attributes, content_file, validate_attribute, validate_file_change):
+    print("validate_file")
     if validate_file_change == 1:
+        print("validate_file - 1")
         if label_attribute is None:
+            print("validate_file - 1.1")
             validate_option_attributes(canvas_options, attributes, content_file, window)
         elif button_open_graphic is None:
+            print("validate_file - 1.2")
             destroy_attributes_options()
             destroy_graphics_options()
             validate_option_attributes(canvas_options, attributes, content_file, window)
         else:
+            print("validate_file - 1.3")
             destroy_buttons_options()
             destroy_graphics_options()
             destroy_attributes_options()
             validate_option_attributes(canvas_options, attributes, content_file, window)
     elif validate_attribute == 2:
+        print("validate_file - 2")
         if label_graphics is None:
+            print("validate_file - 2.1")
             validate_options_graphics(canvas_options, graphics_select, column_values, window)
         elif button_open_graphic is None:
-            destroy_buttons_options()
+            print("validate_file - 2.2")
+            destroy_graphics_options()
             validate_options_graphics(canvas_options, graphics_select, column_values, window)
         else:
+            print("validate_file - 2.3")
             destroy_buttons_options()
             destroy_graphics_options()
             validate_options_graphics(canvas_options, graphics_select, column_values, window)
 
 
 def validate_options_buttons(canvas_options, column_values, window, type_graphics):
+    print("validate_options_buttons")
     if button_open_graphic is None:
+        print("validate_options_buttons - 1.1")
         options_button(canvas_options, column_values, window, type_graphics)
     else:
+        print("validate_options_buttons - 1.2")
         destroy_buttons_options()
         options_button(canvas_options, column_values, window, type_graphics)
 
 
 def validate_options_graphics(canvas_options, graphics_select, column_values, window):
+    print("validate_options_graphics")
     if button_open_graphic is None:
+        print("validate_options_graphics - 1.1")
         options_graphics(canvas_options, graphics_select, column_values, window)
     else:
+        print("validate_options_graphics - 1.2")
         destroy_buttons_options()
         options_graphics(canvas_options, graphics_select, column_values, window)
 
 
 def validate_option_attributes(canvas_options, attributes, content_file, window):
+    print("validate_option_attributes")
     if button_open_graphic is None:
+        print("validate_option_attributes - 1.1")
+        if label_graphics is not None:
+            print("se borra")
+            destroy_graphics_options()
         options_attributes(canvas_options, attributes, content_file, window)
     else:
+        print("validate_option_attributes - 1.2")
         destroy_buttons_options()
         options_attributes(canvas_options, attributes, content_file, window)
 
