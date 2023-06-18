@@ -46,6 +46,12 @@ def histogram_plot(column_values, canvas_graphics):
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
     canvas_figure_widget.place(x=0, y=0)
+    toolbar = NavigationToolbar2Tk(canvas_figure, canvas_graphics)
+    toolbar.zoom(10)
+    toolbar.place(x=0, y=550)
+    restore_button = tkinter.Button(master=canvas_graphics, text="Restaurar zoom",
+                                    command=lambda: restore_zoom(toolbar))
+    restore_button.place(x=100, y=550)
 
 
 def frequency_polygon_graph(column_values, canvas_graphics):
@@ -68,6 +74,12 @@ def frequency_polygon_graph(column_values, canvas_graphics):
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
     canvas_figure_widget.place(x=0, y=0)
+    toolbar = NavigationToolbar2Tk(canvas_figure, canvas_graphics)
+    toolbar.zoom(10)
+    toolbar.place(x=0, y=550)
+    restore_button = tkinter.Button(master=canvas_graphics, text="Restaurar zoom",
+                                    command=lambda: restore_zoom(toolbar))
+    restore_button.place(x=100, y=550)
 
 
 def warhead_graph(column_values, canvas_graphics):
@@ -88,12 +100,19 @@ def warhead_graph(column_values, canvas_graphics):
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
     canvas_figure_widget.place(x=0, y=0)
+    toolbar = NavigationToolbar2Tk(canvas_figure, canvas_graphics)
+    toolbar.zoom(10)
+    toolbar.place(x=0, y=550)
+    restore_button = tkinter.Button(master=canvas_graphics, text="Restaurar zoom",
+                                    command=lambda: restore_zoom(toolbar))
+    restore_button.place(x=100, y=550)
 
 
 def bar_graph(colum_values, canvas_graphics):
     values_bar_graphics = colum_values.value_counts().sort_index()
     y = np.arange(len(values_bar_graphics.index[0:]))
     fig, ax = plt.subplots(figsize=(6, 5), dpi=100)
+    # fig, ax = plt.subplots(figsize=(11.5, 9.5), dpi=55)
     ax.barh(y, values_bar_graphics)
     ax.set_yticks(y, labels=values_bar_graphics.index, rotation=20)
     mplcursors.cursor(hover=True)
@@ -101,6 +120,16 @@ def bar_graph(colum_values, canvas_graphics):
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
     canvas_figure_widget.place(x=0, y=0)
+    toolbar = NavigationToolbar2Tk(canvas_figure, canvas_graphics)
+    toolbar.zoom(10)
+    toolbar.place(x=0, y=550)
+    restore_button = tkinter.Button(master=canvas_graphics, text="Restaurar zoom",
+                                    command=lambda: restore_zoom(toolbar))
+    restore_button.place(x=100, y=550)
+
+
+def restore_zoom(toolbar):
+    toolbar.home()
 
 
 def pie_chart(colum_values, canvas_graphics):
@@ -112,13 +141,20 @@ def pie_chart(colum_values, canvas_graphics):
     for i in data_pie.values:
         frequency_relative = i / total
         frequency_relative_pie.append(frequency_relative * 100)
-    fig, ax = plt.subplots(figsize=(6, 5), dpi=100)
+    fig, ax = plt.subplots(figsize=(11.5, 9.5), dpi=55)
     ax.pie(frequency_relative_pie, labels=data_pie.values[0:], autopct='%1.1f%%', shadow=True)
     ax.legend(data_pie.index.tolist(), title="Data", loc="upper left")
+    mplcursors.cursor(hover=True)
     canvas_figure = FigureCanvasTkAgg(fig, master=canvas_graphics)
     canvas_figure.draw()
     canvas_figure_widget = canvas_figure.get_tk_widget()
     canvas_figure_widget.place(x=0, y=0)
+    toolbar = NavigationToolbar2Tk(canvas_figure, canvas_graphics)
+    toolbar.zoom(10)
+    toolbar.place(x=0, y=550)
+    restore_button = tkinter.Button(master=canvas_graphics, text="Restaurar zoom",
+                                    command=lambda: restore_zoom(toolbar))
+    restore_button.place(x=100, y=550)
 
 
 # def temporal_mean_g(column_values, window, canvas):
